@@ -219,8 +219,12 @@
     });
 
     // Contact Form
-
     $('#contactform').submit(function () {
+	var success_header = '<fieldset><div id="success_page"><h4 class="highlight">';
+	var success_footer = '</h4></div></fieldset>';
+	var error_header = '<div class="error_message">';
+	var error_footer = '</div>';
+                    	
         var action = $(this).attr('action');
         $("#message").slideUp(250, function () {
             $('#message').hide();
@@ -230,10 +234,17 @@
             $.post(action, {
                 name: $('#name').val(),
                 email: $('#email').val(),
-                comments: $('#comments').val()
+                content: $('#content').val(),
+		subject: $('#subject').val()
+
             },
                 function (data) {
-                    document.getElementById('message').innerHTML = data;
+		    if ( data.result == "success" ) {
+			    document.getElementById('message').innerHTML = success_header + String(data.data) + success_footer;
+                            $('#contactform').hide();
+	            } else {
+			    document.getElementById('message').innerHTML = error_header + String(data.data) + error_footer;
+		    }
                     $('#message').slideDown(250);
                     $('#contactform img.loader').fadeOut('slow', function () {$(this).remove(); });
                     $('#submit').removeAttr('disabled');
